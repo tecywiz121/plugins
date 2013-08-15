@@ -14,10 +14,15 @@ Requirements
  * SDL2
 
     $ hg clone http://hg.libsdl.org/SDL
+    
     $ mkdir build
+    
     $ cd build
+    
     $ ../configure --prefix=/usr
+    
     $ make
+    
     $ sudo make install
 
  * lua5.1
