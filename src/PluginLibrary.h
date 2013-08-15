@@ -8,9 +8,9 @@
 class Plugin;
 
 typedef int (*create_fptr)(void);
-typedef void (*destroy_fptr)(int);
-typedef void (*argument_fptr)(int, const char*, const char*);
-typedef void (*start_fptr)(int);
+typedef int (*destroy_fptr)(int);
+typedef int (*argument_fptr)(int, const char*, const char*);
+typedef int (*start_fptr)(int);
 
 class PluginLibrary
 {

@@ -11,12 +11,18 @@ Plugin::Plugin(const PluginLibrary& library, int id)
 
 void Plugin::start()
 {
-    _library._start(_id);
+    if (_library._start(_id) == -1)
+    {
+        throw exception();
+    }
 }
 
 void Plugin::argument(string key, string value)
 {
-    _library._argument(_id, key.c_str(), value.c_str());
+    if (_library._argument(_id, key.c_str(), value.c_str()))
+    {
+        throw exception();
+    }
 }
 
 Plugin::~Plugin()

@@ -17,11 +17,11 @@ void PluginLibrary::load(string& path)
     }
 
     // Get around object-to-function pointer restrictions (http://stackoverflow.com/a/1096349)
-    *reinterpret_cast<void**>(&_create) = SDL_LoadFunction(_libptr, "create"); 
-    *reinterpret_cast<void**>(&_destroy) = SDL_LoadFunction(_libptr, "destroy"); 
-    *reinterpret_cast<void**>(&_argument) = SDL_LoadFunction(_libptr, "argument"); 
+    *reinterpret_cast<void**>(&_create) = SDL_LoadFunction(_libptr, "create");
+    *reinterpret_cast<void**>(&_destroy) = SDL_LoadFunction(_libptr, "destroy");
+    *reinterpret_cast<void**>(&_argument) = SDL_LoadFunction(_libptr, "argument");
     *reinterpret_cast<void**>(&_start) = SDL_LoadFunction(_libptr, "start");
-    
+
     if (!(_create && _destroy && _argument && _start))
     {
         throw exception();
@@ -30,7 +30,14 @@ void PluginLibrary::load(string& path)
 
 unique_ptr<Plugin> PluginLibrary::create()
 {
-    Plugin* inst = new Plugin(*this, _create());
+    int id = _create();
+
+    if (id < 0)
+    {
+        throw exception();
+    }
+
+    Plugin* inst = new Plugin(*this, id);
     return unique_ptr<Plugin>(inst);
 }
 

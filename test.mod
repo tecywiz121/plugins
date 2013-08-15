@@ -1,2 +1,2 @@
 [./lua.so]
-script=banana
+script=test.lua
