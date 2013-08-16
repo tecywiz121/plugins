@@ -37,18 +37,17 @@ Plugin& PluginManager::load_plugin(string path)
     PluginDescription desc(path);
 
     PluginLibrary& library = load_library(desc.module());
-    unique_ptr<Plugin> plugin = library.create();
+    Plugin& plugin = library.create();
 
     for (pair<string, string> p : desc.arguments())
     {
-        plugin->argument(p.first, p.second);
+        plugin.argument(p.first, p.second);
     }
 
-    Plugin& result = *plugin;
-    _plugins.push_back(move(plugin));
-    return result;
+    return plugin;
 }
 
 PluginManager::~PluginManager()
 {
+    _libraries.clear();
 }

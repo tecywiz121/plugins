@@ -9,5 +9,4 @@
 #	define UNUSED(x) x
 #endif
 
-
 #endif // __UTIL_H__

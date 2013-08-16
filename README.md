@@ -11,18 +11,24 @@ Any instructions I give are for Ubuntu, but it shouldn't be too hard to adapt.  
 Requirements
 ------------
 
- * SDL2
-
-  ```$ hg clone http://hg.libsdl.org/SDL;
-mkdir build;
-cd build;
-../configure --prefix=/usr;
-make;
-sudo make install```
-
- * lua5.1
+ * lua5.1 (optional, but useless without it)
 
   ```$ sudo apt-get install liblua5.1-0-dev```
+
+Building
+--------
+
+$ mkdir build
+$ cd build
+$ cmake ../
+$ make
+
+Running
+-------
+
+$ ./sharedobj test_lua.mod
+
+*NB: If cmake cannot find lua it won't copy test_lua.mod*
 
 Architecture
 ------------

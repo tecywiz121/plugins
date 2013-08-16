@@ -10,7 +10,6 @@ class PluginManager
 {
     private:
         std::unordered_map<std::string, std::unique_ptr<PluginLibrary> > _libraries;
-        std::vector<std::unique_ptr<Plugin> > _plugins;
         PluginLibrary& load_library(std::string path);
     public:
         PluginManager();

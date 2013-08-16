@@ -8,11 +8,11 @@ class PluginLibrary;
 class Plugin
 {
     private:
-        int _id;
         const PluginLibrary& _library;
 
     public:
         Plugin(const PluginLibrary& library, int id);
+        const int id;
         void start();
         void argument(std::string key, std::string value);
 

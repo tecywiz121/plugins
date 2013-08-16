@@ -1,6 +1,4 @@
 #include <iostream>
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_loadso.h"
 #include "util.h"
 #include "PluginManager.h"
 
@@ -20,8 +18,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    SDL_Init(SDL_INIT_EVERYTHING);
-
     PluginManager manager;
 
     for (int ii = 1; ii < argc; ii++)
@@ -30,6 +26,5 @@ int main(int argc, char** argv)
         plugin.start();
     }
 
-    SDL_Quit();
     return 0;
 }

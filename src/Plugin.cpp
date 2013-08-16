@@ -4,14 +4,14 @@
 
 using namespace std;
 
-Plugin::Plugin(const PluginLibrary& library, int id)
-    : _id(id), _library(library)
+Plugin::Plugin(const PluginLibrary& library, int newid)
+    : _library(library), id(newid)
 {
 }
 
 void Plugin::start()
 {
-    if (_library._start(_id) == -1)
+    if (_library._start(id) == 0)
     {
         throw exception();
     }
@@ -19,7 +19,7 @@ void Plugin::start()
 
 void Plugin::argument(string key, string value)
 {
-    if (_library._argument(_id, key.c_str(), value.c_str()))
+    if (_library._argument(id, key.c_str(), value.c_str()) == 0)
     {
         throw exception();
     }
@@ -27,5 +27,5 @@ void Plugin::argument(string key, string value)
 
 Plugin::~Plugin()
 {
-    _library._destroy(_id);
+    _library._destroy(id);
 }
