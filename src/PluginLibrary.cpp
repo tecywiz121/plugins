@@ -2,11 +2,14 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
+#include <exception>
+#include <stdexcept>
 #include "util.h"
 #include "plugin_i.h"
 #include "dynload.h"
 #include "PluginLibrary.h"
 #include "PluginDescription.h"
+#include "Function.h"
 
 using namespace std;
 
@@ -26,9 +29,20 @@ int PluginLibrary::_register_plugin_func_c(void* host, const char* name, const c
     return lib->register_plugin_func_c(sName, sSig, func);
 }
 
-int PluginLibrary::register_plugin_func(UNUSED(int id), UNUSED(string& name), UNUSED(string& sig))
+int PluginLibrary::register_plugin_func(int id, string& name, string& sig)
 {
-    return 1;
+    try
+    {
+        Plugin& plugin = *_plugins.at(id);
+        PluginFunction *func = new PluginFunction(name, sig, plugin);
+        unique_ptr<PluginFunction> func_ptr(func);
+        plugin.register_plugin_function(move(func_ptr));
+        return 1;
+    }
+    catch (out_of_range& e)
+    {
+        return 0;
+    }
 }
 
 int PluginLibrary::register_plugin_func_c(UNUSED(string& name), UNUSED(string& sig), UNUSED(fptr func))

@@ -1,9 +1,11 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
+#include "kvec.h"
 #include "khash.h"
 #include "util.h"
 #include "plugin_i.h"
@@ -12,30 +14,66 @@
 extern "C" {
 #endif
 
+//
+// call_info_t - A structure containing a single call to a lua function
+//
+typedef struct call_info {
+    lua_State* state;
+    const char* function_name;
+    int n_args;
+    int called;
+} call_info_t;
+
+static call_info_t *call_info_init(lua_State* state, const char* function_name)
+{
+    call_info_t *inst = (call_info_t *)malloc(sizeof(call_info_t));
+    inst->state = state;
+    inst->function_name = function_name;
+    inst->n_args = 0;
+    inst->called = 0;
+    return inst;
+}
+
+static void call_info_destroy(call_info_t *inst)
+{
+    if (!inst->called)
+    {
+        // For whatever reason, the function was not called, so we have to clean up the stack
+        lua_pop(inst->state, inst->n_args);
+    }
+
+    free(inst);
+}
+
+//
+// instance_t - An instance of the lua intepreter and the path to its script
+//
 typedef struct instance {
     lua_State* state;
     const char* path;
+    kvec_t(call_info_t *) callstack;
 } instance_t;
 
 static instance_t *instance_init(lua_State* state)
 {
     instance_t *inst = (instance_t *)malloc(sizeof(instance_t));
     inst->state = state;
+    kv_init(inst->callstack);
     return inst;
 }
 
 static void instance_destroy(instance_t *inst)
 {
     lua_close(inst->state);
+    kv_destroy(inst->callstack);
     free(inst);
 }
 
-// Plugin Interface
 plugin_interface_t plugin_interface;
 
 // Initialize the hashmap
 KHASH_MAP_INIT_INT(m32, instance_t *)
-khash_t(m32) *states = 0;
+static khash_t(m32) *states = 0;
 
 // Stores the next id to assign to a lua plugin
 static int _nextid = 1;
@@ -60,9 +98,55 @@ static void openlualibs(lua_State *l)
 }
 
 //
-// The API expected by the loader
+// Lua-C Interface
 //
+static int reg_plugin_func(lua_State *l)
+{
+    const char* name = lua_tostring(l, 1);
+    const char* sig = lua_tostring(l, 2);
 
+
+    // Find the matching id for the given state
+    for (khiter_t k = kh_begin(states); k != kh_end(states); ++k)
+    {
+        if (kh_exist(states, k))
+        {
+            int key = kh_key(states, k);
+            instance_t *val = kh_val(states, k);
+
+            if (val->state == l)
+            {
+                if (plugin_interface.register_func(plugin_interface.host, key, name, sig))
+                {
+                    // Registered properly
+                    return 0;
+                }
+                else
+                {
+                    // Register failed in host
+                    lua_pushstring(l, "host could not register function");
+                    return 1;
+                }
+            }
+        }
+    }
+
+    // The given lua state isn't in our states hashtable
+    lua_pushstring(l, "could not find plugin to match lua state");
+    return 1;
+}
+
+// Register functions available to the script
+static void regluafuncs(lua_State *l)
+{
+    lua_pushcfunction(l, reg_plugin_func);
+    lua_setglobal(l, "register_function");
+}
+
+
+//
+// Loader Interface
+//
 int create(void)
 {
     if (!states)
@@ -72,6 +156,7 @@ int create(void)
 
     lua_State* l = lua_open();
     openlualibs(l);
+    regluafuncs(l);
 
     instance_t *inst = instance_init(l);
 
@@ -152,6 +237,117 @@ int start(int id)
         return 0;
     }
 }
+
+//
+// Plugin Interface
+//
+static void* begin_call(int id, const char* name)
+{
+    khint_t key = kh_get(m32, states, id);
+    if (key != kh_end(states))
+    {
+        // TODO: Keep track of which functions have been registered
+        instance_t* inst = kh_val(states, key);
+        call_info_t *info = call_info_init(inst->state, name);
+
+        // Push the function to call onto the lua stack
+        lua_getglobal(inst->state, name);
+        info->n_args++;
+
+        // Push our call_info onto our callstack
+        kv_push(call_info_t*, inst->callstack, info);
+        return inst;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+static void end_call(void* call)
+{
+    instance_t *inst = (instance_t *)call;
+    call_info_t *info = kv_pop(inst->callstack);
+    call_info_destroy(info);
+}
+
+static void call_void(void* call)
+{
+    instance_t *inst = (instance_t *)call;
+    call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
+    info->called = true;
+    if (lua_pcall(info->state, info->n_args - 1, 0, 0))
+    {
+        printf("mod_lua: call to function `%s` failed\n", info->function_name);
+    }
+}
+
+static void call_not_implemented(void* call)
+{
+    instance_t *inst = (instance_t *)call;
+    call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
+    luaL_error(info->state, "return type not implemented yet");
+}
+
+#define CALL_FUNC(name, type, lua_type)                                                     \
+    static type call_##name(void* call)                                                     \
+    {                                                                                       \
+        instance_t *inst = (instance_t *)call;                                              \
+        call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);            \
+        info->called = true;                                                                \
+        if (lua_pcall(info->state, info->n_args - 1, 1, 0))                                 \
+        {                                                                                   \
+            printf("mod_lua: call to function `%s` failed\n", info->function_name);         \
+        }                                                                                   \
+        if (!lua_is##lua_type(info->state, -1))                                             \
+        {                                                                                   \
+            luaL_error(info->state,                                                         \
+                "function '%s' should return " #lua_type, info->function_name);             \
+        }                                                                                   \
+        return (type)lua_to##lua_type(info->state, -1);                                     \
+    }
+
+CALL_FUNC(bool, bool, number)
+CALL_FUNC(char, char, number)
+CALL_FUNC(uchar, unsigned char, number)
+CALL_FUNC(short, short, number)
+CALL_FUNC(ushort, unsigned short, number)
+CALL_FUNC(int, int, number)
+CALL_FUNC(uint, unsigned int, number)
+CALL_FUNC(long, long, number)
+CALL_FUNC(ulong, unsigned long, number)
+CALL_FUNC(long_long, long long, number)
+CALL_FUNC(ulong_long, unsigned long long, number)
+CALL_FUNC(float, float, number)
+CALL_FUNC(double, double, number)
+
+plugin_interface_t plugin_interface = {
+    // Provided by host
+    .host = 0,
+    .register_func = 0,
+    .register_func_c = 0,
+
+    // My callbacks
+    .begin_call = &begin_call,
+    .end_call = &end_call,
+
+    .call_void = &call_void,
+    .call_bool = &call_bool,
+    .call_char = &call_char,
+    .call_uchar = &call_uchar,
+    .call_short = &call_short,
+    .call_ushort = &call_ushort,
+    .call_int = &call_int,
+    .call_uint = &call_uint,
+    .call_long = &call_long,
+    .call_ulong = &call_ulong,
+    .call_long_long = &call_long_long,
+    .call_ulong_long = &call_ulong_long,
+    .call_float = &call_float,
+    .call_double = &call_double,
+    .call_pointer = (void* (*)(void*))(&call_not_implemented),
+    .call_c_str = (const char* (*)(void*))(&call_not_implemented),
+};
 
 #ifdef __cplusplus
 }

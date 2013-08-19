@@ -1,6 +1,8 @@
+#include <memory>
 #include <iostream>
 #include "Plugin.h"
 #include "PluginLibrary.h"
+#include "Function.h"
 
 using namespace std;
 
@@ -23,6 +25,16 @@ void Plugin::argument(string key, string value)
     {
         throw exception();
     }
+}
+
+void Plugin::register_plugin_function(unique_ptr<PluginFunction> func)
+{
+    _functions[func->name()] = move(func);
+}
+
+PluginFunction& Plugin::get_function(const string& name)
+{
+    return *_functions[name];
 }
 
 Plugin::~Plugin()

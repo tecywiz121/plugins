@@ -9,6 +9,7 @@
 #include "Plugin.h"
 
 class Plugin;
+class PluginFunction;
 
 typedef void (*fptr)();
 
@@ -23,6 +24,7 @@ extern "C" typedef int register_plugin_func_c_t(void*, const char*, const char*,
 class PluginLibrary
 {
     friend class Plugin;
+    friend class PluginFunction;
 
     private:
         DLLib* _libptr;

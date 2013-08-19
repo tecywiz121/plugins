@@ -2,6 +2,8 @@
 #include "util.h"
 #include "PluginManager.h"
 
+#include "Function.h"
+
 using namespace std;
 
 int main(int argc, char** argv)
@@ -24,6 +26,9 @@ int main(int argc, char** argv)
     {
         Plugin& plugin = manager.load_plugin(argv[ii]);
         plugin.start();
+
+        PluginFunction& banana = plugin.get_function("banana");
+        cout << "Returned: " << banana.invoke<int>() << endl;
     }
 
     return 0;

@@ -14,10 +14,11 @@ add_subdirectory(${SHAREDOBJ_SOURCE_DIR}/lib/dyncall)
 set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Werror -Wstrict-aliasing -std=c++11 -pedantic")
 
 include_directories(${SHAREDOBJ_SOURCE_DIR}/include)
-add_executable(sharedobj src/loader.cpp src/Plugin.cpp src/PluginManager.cpp src/PluginDescription.cpp src/PluginLibrary.cpp)
+add_executable(sharedobj src/loader.cpp src/Plugin.cpp src/PluginManager.cpp src/PluginDescription.cpp src/PluginLibrary.cpp src/Function.cpp)
 
 include_directories("${SHAREDOBJ_SOURCE_DIR}/${DYNCALL_DIR}/dynload")
-target_link_libraries(sharedobj dynload_s ${CMAKE_DL_LIBS})
+include_directories("${SHAREDOBJ_SOURCE_DIR}/${DYNCALL_DIR}/dyncall")
+target_link_libraries(sharedobj dynload_s dyncall_s ${CMAKE_DL_LIBS})
 
 # Build optional modules
 find_package(Lua51)
