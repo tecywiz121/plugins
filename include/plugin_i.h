@@ -26,7 +26,7 @@ extern "C" {
  * invoked, and finally the call is ended.                                    *
  ******************************************************************************/
 
-typedef struct invoke_interface {
+struct invoke_interface {
     void (*arg_bool)(void* invocation, PBool v);
     void (*arg_char)(void* invocation, signed char v);
     void (*arg_uchar)(void* invocation, unsigned char v);
@@ -61,23 +61,24 @@ typedef struct invoke_interface {
     const char* (*ret_c_str)(void* invocation);
 
     void (*end_call)(void* call);
-} invoke_interface_t;
+};
 
-typedef struct plugin_interface {
+struct plugin_interface {
     // Host Provided Callbacks
     void* host;
     int (*register_func)(void* host, int id, const char* name, const char* sig);
-    int (*register_func_c)(void* host, const char* name, const char* sig, void (*)());
+    int (*register_func_c)(void* host, const char* name, const char* sig,
+        void (*)());
 
     const char* (*describe_func)(void* host, const char* name);
 
-    invoke_interface_t host_invoke;
+    struct invoke_interface host_invoke;
     void* (*begin_host_call)(void* host, const char* name);
 
     // Plugin Provided Callbacks
-    invoke_interface_t plugin_invoke;
+    struct invoke_interface plugin_invoke;
     void* (*begin_plugin_call)(int id, const char* name);
-} plugin_interface_t;
+};
 
 #undef PBool
 #ifdef __cplusplus

@@ -15,19 +15,19 @@ class bad_parse : public std::exception
         virtual const char* what() const throw ();
 };
 
-class PluginDescription
+class plugin_description
 {
     private:
         std::string _module;
         std::unordered_map<std::string, std::string> _arguments;
 
     public:
-        PluginDescription(std::string path) throw (bad_parse);
+        plugin_description(std::string path) throw (bad_parse);
 
         std::string& module();
         std::unordered_map<std::string, std::string>& arguments();
 
-        virtual ~PluginDescription();
+        virtual ~plugin_description();
 };
 
 #endif

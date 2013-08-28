@@ -1,34 +1,32 @@
 #include <iostream>
 #include "util.h"
-#include "PluginManager.h"
+#include "plugin_manager.hpp"
 
-#include "Function.h"
-
-using namespace std;
+#include "function.hpp"
 
 int main(int argc, char** argv)
 {
     if (argc <= 1)
     {
-        string me = "main";
+        std::string me = "main";
         if (argc == 1)
         {
-            me = string(argv[0]);
+            me = std::string(argv[0]);
         }
 
-        cout << me << ": plugin1 [plugin2...]" << endl;
+        std::cout << me << ": plugin1 [plugin2...]" << std::endl;
         return 1;
     }
 
-    PluginManager manager;
+    plugin_manager manager;
 
     for (int ii = 1; ii < argc; ii++)
     {
-        Plugin& plugin = manager.load_plugin(argv[ii]);
+        plugin& plugin = manager.load_plugin(argv[ii]);
         plugin.start();
 
-        PluginFunction& banana = plugin.get_function("banana");
-        cout << "Returned: " << banana.invoke<int>() << endl;
+        plugin_function& banana = plugin.get_function("banana");
+        std::cout << "Returned: " << banana.invoke<int>() << std::endl;
     }
 
     return 0;

@@ -2,11 +2,9 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include "PluginDescription.h"
+#include "plugin_description.hpp"
 
-using namespace std;
-
-bad_parse::bad_parse(const string msg) throw()
+bad_parse::bad_parse(const std::string msg) throw()
 {
     _msg = msg;
 }
@@ -16,24 +14,24 @@ const char* bad_parse::what() const throw()
     return _msg.c_str();
 }
 
-string& PluginDescription::module()
+std::string& plugin_description::module()
 {
     return _module;
 }
 
-unordered_map<string, string>& PluginDescription::arguments()
+std::unordered_map<std::string, std::string>& plugin_description::arguments()
 {
     return _arguments;
 }
 
-PluginDescription::PluginDescription(string path) throw (bad_parse)
+plugin_description::plugin_description(std::string path) throw (bad_parse)
 {
-    ifstream fdesc(path);
+    std::ifstream fdesc(path);
 
     int state = 0;
-    stringstream ss;
-    string key;
-    string value;
+    std::stringstream ss;
+    std::string key;
+    std::string value;
 
     if (fdesc.is_open())
     {
@@ -115,7 +113,7 @@ PluginDescription::PluginDescription(string path) throw (bad_parse)
     }
 }
 
-PluginDescription::~PluginDescription()
+plugin_description::~plugin_description()
 {
 
 }

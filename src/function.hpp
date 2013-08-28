@@ -3,15 +3,15 @@
 #include <exception>
 #include "dyncall.h"
 #include "util.h"
-#include "Plugin.h"
+#include "plugin.hpp"
 
 typedef void (*fptr)(void);
 
-template<typename TReturn, typename First, typename... Rest> class Invoker;
+template<typename TReturn, typename First, typename... Rest> class invoker;
 
-class Function
+class function
 {
-    template<typename TReturn, typename First, typename... Rest> friend class Invoker;
+    template<typename TReturn, typename First, typename... Rest> friend class invoker;
 private:
     void check_signature(int fromend, char type);
     void check_return(char type);
@@ -55,14 +55,14 @@ protected:
     virtual void* ret_pointer() =0;
     virtual const char* ret_c_str() =0;
 public:
-    Function(const std::string& name, const std::string& signature);
+    function(const std::string& name, const std::string& signature);
     template<typename TReturn, typename... Arguments>
     TReturn invoke(Arguments... args);
     const std::string& name();
     const std::string& signature();
 };
 
-class DynCallFunction : public Function
+class dyncall_function : public function
 {
 private:
     DCCallVM *_vm = 0;
@@ -103,13 +103,13 @@ protected:
     virtual void* ret_pointer();
     virtual const char* ret_c_str();
 public:
-    DynCallFunction(std::string& name, std::string& sig, fptr func);
+    dyncall_function(std::string& name, std::string& sig, fptr func);
 };
 
-class PluginFunction : public Function
+class plugin_function : public function
 {
 private:
-    plugin_interface_t* _interface;
+    struct plugin_interface* _interface;
     const int _id;
     void* _call_data = 0;
 protected:
@@ -148,20 +148,20 @@ protected:
     virtual void* ret_pointer();
     virtual const char* ret_c_str();
 public:
-    PluginFunction(std::string& name, std::string& sig, Plugin& plugin);
+    plugin_function(std::string& name, std::string& sig, plugin& plugin);
 };
 
-#include "Invoker.h"
+#include "invoker.hpp"
 
 template<typename TReturn, typename... Arguments>
-TReturn Function::invoke(Arguments... args)
+TReturn function::invoke(Arguments... args)
 {
     if (sizeof...(args) != _arguments.size())
     {
         throw std::exception();
     }
     begin_call();
-    return Invoker<TReturn, Arguments...>::invoke(*this, args...);
+    return invoker<TReturn, Arguments...>::invoke(*this, args...);
 }
 
 #endif

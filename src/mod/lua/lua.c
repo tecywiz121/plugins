@@ -69,7 +69,7 @@ static void instance_destroy(instance_t *inst)
     free(inst);
 }
 
-plugin_interface_t plugin_interface;
+struct plugin_interface plugin_interface;
 
 // Initialize the hashmap
 KHASH_MAP_INIT_INT(m32, instance_t *)
@@ -321,7 +321,7 @@ RET_FUNC(ulong_long, unsigned long long, number)
 RET_FUNC(float, float, number)
 RET_FUNC(double, double, number)
 
-plugin_interface_t plugin_interface = {
+struct plugin_interface plugin_interface = {
     // My callbacks
     .begin_plugin_call = &begin_call,
 
