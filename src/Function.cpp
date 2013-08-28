@@ -254,169 +254,169 @@ void PluginFunction::begin_call()
         // Only one call at a time
         throw exception();
     }
-    _call_data = _interface->begin_call(_id, _name.c_str());
+    _call_data = _interface->begin_plugin_call(_id, _name.c_str());
 }
 
 void PluginFunction::end_call()
 {
     if (_call_data)
     {
-        _interface->end_call(_call_data);
+        _interface->plugin_invoke.end_call(_call_data);
         _call_data = 0;
     }
 }
 
 void PluginFunction::arg_bool(bool v)
 {
-    _interface->arg_bool(_call_data, v);
+    _interface->plugin_invoke.arg_bool(_call_data, v);
 }
 
 void PluginFunction::arg_char(char v)
 {
-    _interface->arg_char(_call_data, v);
+    _interface->plugin_invoke.arg_char(_call_data, v);
 }
 
 void PluginFunction::arg_uchar(unsigned char v)
 {
-    _interface->arg_uchar(_call_data, v);
+    _interface->plugin_invoke.arg_uchar(_call_data, v);
 }
 
 void PluginFunction::arg_short(short v)
 {
-    _interface->arg_short(_call_data, v);
+    _interface->plugin_invoke.arg_short(_call_data, v);
 }
 
 void PluginFunction::arg_ushort(unsigned short v)
 {
-    _interface->arg_ushort(_call_data, v);
+    _interface->plugin_invoke.arg_ushort(_call_data, v);
 }
 
 void PluginFunction::arg_int(int v)
 {
-    _interface->arg_int(_call_data, v);
+    _interface->plugin_invoke.arg_int(_call_data, v);
 }
 
 void PluginFunction::arg_uint(unsigned int v)
 {
-    _interface->arg_uint(_call_data, v);
+    _interface->plugin_invoke.arg_uint(_call_data, v);
 }
 
 void PluginFunction::arg_long(long v)
 {
-    _interface->arg_long(_call_data, v);
+    _interface->plugin_invoke.arg_long(_call_data, v);
 }
 
 void PluginFunction::arg_ulong(unsigned long v)
 {
-    _interface->arg_ulong(_call_data, v);
+    _interface->plugin_invoke.arg_ulong(_call_data, v);
 }
 
 void PluginFunction::arg_longlong(long long v)
 {
-    _interface->arg_long_long(_call_data, v);
+    _interface->plugin_invoke.arg_long_long(_call_data, v);
 }
 
 void PluginFunction::arg_ulonglong(unsigned long long v)
 {
-    _interface->arg_ulong_long(_call_data, v);
+    _interface->plugin_invoke.arg_ulong_long(_call_data, v);
 }
 
 void PluginFunction::arg_float(float v)
 {
-    _interface->arg_float(_call_data, v);
+    _interface->plugin_invoke.arg_float(_call_data, v);
 }
 
 void PluginFunction::arg_double(double v)
 {
-    _interface->arg_double(_call_data, v);
+    _interface->plugin_invoke.arg_double(_call_data, v);
 }
 
 void PluginFunction::arg_pointer(void* v)
 {
-    _interface->arg_pointer(_call_data, v);
+    _interface->plugin_invoke.arg_pointer(_call_data, v);
 }
 
 void PluginFunction::arg_c_str(const char* v)
 {
-    _interface->arg_c_str(_call_data, v);
+    _interface->plugin_invoke.arg_c_str(_call_data, v);
 }
 
 void PluginFunction::ret_void()
 {
-    _interface->call_void(_call_data);
+    _interface->plugin_invoke.ret_void(_call_data);
 }
 
 bool PluginFunction::ret_bool()
 {
-    return _interface->call_bool(_call_data);
+    return _interface->plugin_invoke.ret_bool(_call_data);
 }
 
 char PluginFunction::ret_char()
 {
-    return _interface->call_char(_call_data);
+    return _interface->plugin_invoke.ret_char(_call_data);
 }
 
 unsigned char PluginFunction::ret_uchar()
 {
-    return _interface->call_uchar(_call_data);
+    return _interface->plugin_invoke.ret_uchar(_call_data);
 }
 
 short PluginFunction::ret_short()
 {
-    return _interface->call_short(_call_data);
+    return _interface->plugin_invoke.ret_short(_call_data);
 }
 
 unsigned short PluginFunction::ret_ushort()
 {
-    return _interface->call_ushort(_call_data);
+    return _interface->plugin_invoke.ret_ushort(_call_data);
 }
 
 int PluginFunction::ret_int()
 {
-    return _interface->call_int(_call_data);
+    return _interface->plugin_invoke.ret_int(_call_data);
 }
 
 unsigned int PluginFunction::ret_uint()
 {
-    return _interface->call_uint(_call_data);
+    return _interface->plugin_invoke.ret_uint(_call_data);
 }
 
 long PluginFunction::ret_long()
 {
-    return _interface->call_long(_call_data);
+    return _interface->plugin_invoke.ret_long(_call_data);
 }
 
 unsigned long PluginFunction::ret_ulong()
 {
-    return _interface->call_ulong(_call_data);
+    return _interface->plugin_invoke.ret_ulong(_call_data);
 }
 
 long long PluginFunction::ret_longlong()
 {
-    return _interface->call_long_long(_call_data);
+    return _interface->plugin_invoke.ret_long_long(_call_data);
 }
 
 unsigned long long PluginFunction::ret_ulonglong()
 {
-    return _interface->call_ulong_long(_call_data);
+    return _interface->plugin_invoke.ret_ulong_long(_call_data);
 }
 
 float PluginFunction::ret_float()
 {
-    return _interface->call_float(_call_data);
+    return _interface->plugin_invoke.ret_float(_call_data);
 }
 
 double PluginFunction::ret_double()
 {
-    return _interface->call_double(_call_data);
+    return _interface->plugin_invoke.ret_double(_call_data);
 }
 
 void* PluginFunction::ret_pointer()
 {
-    return _interface->call_pointer(_call_data);
+    return _interface->plugin_invoke.ret_pointer(_call_data);
 }
 
 const char* PluginFunction::ret_c_str()
 {
-    return _interface->call_c_str(_call_data);
+    return _interface->plugin_invoke.ret_c_str(_call_data);
 }

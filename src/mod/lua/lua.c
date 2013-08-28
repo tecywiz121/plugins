@@ -271,7 +271,7 @@ static void end_call(void* call)
     call_info_destroy(info);
 }
 
-static void call_void(void* call)
+static void ret_void(void* call)
 {
     instance_t *inst = (instance_t *)call;
     call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
@@ -282,15 +282,15 @@ static void call_void(void* call)
     }
 }
 
-static void call_not_implemented(void* call)
+static void ret_not_implemented(void* call)
 {
     instance_t *inst = (instance_t *)call;
     call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
     luaL_error(info->state, "return type not implemented yet");
 }
 
-#define CALL_FUNC(name, type, lua_type)                                                     \
-    static type call_##name(void* call)                                                     \
+#define RET_FUNC(name, type, lua_type)                                                      \
+    static type ret_##name(void* call)                                                      \
     {                                                                                       \
         instance_t *inst = (instance_t *)call;                                              \
         call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);            \
@@ -307,46 +307,44 @@ static void call_not_implemented(void* call)
         return (type)lua_to##lua_type(info->state, -1);                                     \
     }
 
-CALL_FUNC(bool, bool, number)
-CALL_FUNC(char, char, number)
-CALL_FUNC(uchar, unsigned char, number)
-CALL_FUNC(short, short, number)
-CALL_FUNC(ushort, unsigned short, number)
-CALL_FUNC(int, int, number)
-CALL_FUNC(uint, unsigned int, number)
-CALL_FUNC(long, long, number)
-CALL_FUNC(ulong, unsigned long, number)
-CALL_FUNC(long_long, long long, number)
-CALL_FUNC(ulong_long, unsigned long long, number)
-CALL_FUNC(float, float, number)
-CALL_FUNC(double, double, number)
+RET_FUNC(bool, bool, number)
+RET_FUNC(char, char, number)
+RET_FUNC(uchar, unsigned char, number)
+RET_FUNC(short, short, number)
+RET_FUNC(ushort, unsigned short, number)
+RET_FUNC(int, int, number)
+RET_FUNC(uint, unsigned int, number)
+RET_FUNC(long, long, number)
+RET_FUNC(ulong, unsigned long, number)
+RET_FUNC(long_long, long long, number)
+RET_FUNC(ulong_long, unsigned long long, number)
+RET_FUNC(float, float, number)
+RET_FUNC(double, double, number)
 
 plugin_interface_t plugin_interface = {
-    // Provided by host
-    .host = 0,
-    .register_func = 0,
-    .register_func_c = 0,
-
     // My callbacks
-    .begin_call = &begin_call,
-    .end_call = &end_call,
+    .begin_plugin_call = &begin_call,
 
-    .call_void = &call_void,
-    .call_bool = &call_bool,
-    .call_char = &call_char,
-    .call_uchar = &call_uchar,
-    .call_short = &call_short,
-    .call_ushort = &call_ushort,
-    .call_int = &call_int,
-    .call_uint = &call_uint,
-    .call_long = &call_long,
-    .call_ulong = &call_ulong,
-    .call_long_long = &call_long_long,
-    .call_ulong_long = &call_ulong_long,
-    .call_float = &call_float,
-    .call_double = &call_double,
-    .call_pointer = (void* (*)(void*))(&call_not_implemented),
-    .call_c_str = (const char* (*)(void*))(&call_not_implemented),
+    .plugin_invoke = {
+        .end_call = &end_call,
+
+        .ret_void = &ret_void,
+        .ret_bool = &ret_bool,
+        .ret_char = &ret_char,
+        .ret_uchar = &ret_uchar,
+        .ret_short = &ret_short,
+        .ret_ushort = &ret_ushort,
+        .ret_int = &ret_int,
+        .ret_uint = &ret_uint,
+        .ret_long = &ret_long,
+        .ret_ulong = &ret_ulong,
+        .ret_long_long = &ret_long_long,
+        .ret_ulong_long = &ret_ulong_long,
+        .ret_float = &ret_float,
+        .ret_double = &ret_double,
+        .ret_pointer = (void* (*)(void*))(&ret_not_implemented),
+        .ret_c_str = (const char* (*)(void*))(&ret_not_implemented),
+    },
 };
 
 #ifdef __cplusplus
