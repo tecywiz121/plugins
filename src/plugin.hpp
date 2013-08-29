@@ -1,5 +1,5 @@
-#ifndef __PLUGIN_H__
-#define __PLUGIN_H__ 1
+#ifndef PLUGIN_H
+#define PLUGIN_H 1
 
 class plugin_library;
 

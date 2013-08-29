@@ -1,5 +1,5 @@
-#ifndef __PLUGINDESCRIPTION_H__
-#define __PLUGINDESCRIPTION_H__ 1
+#ifndef PLUGINDESCRIPTION_H
+#define PLUGINDESCRIPTION_H 1
 
 #include <string>
 #include <exception>

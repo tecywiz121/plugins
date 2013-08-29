@@ -1,4 +1,4 @@
-#ifndef __IN_INVOKER_H__
+#ifndef IN_INVOKER_H
 #   error __FILE__ should not be included directly
 #endif
 

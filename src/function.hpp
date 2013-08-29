@@ -1,5 +1,5 @@
-#ifndef __FUNCTION_H__
-#define __FUNCTION_H__ 1
+#ifndef FUNCTION_H
+#define FUNCTION_H 1
 #include <exception>
 #include "dyncall.h"
 #include "util.h"

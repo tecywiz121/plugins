@@ -1,5 +1,5 @@
-#ifndef __PLUGINLIBRARY_H__
-#define __PLUGINLIBRARY_H__ 1
+#ifndef PLUGINLIBRARY_H
+#define PLUGINLIBRARY_H 1
 
 #include <memory>
 #include <string>

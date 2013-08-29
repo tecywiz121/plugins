@@ -1,5 +1,5 @@
-#ifndef __PLUGINMANAGER_H__
-#define __PLUGINMANAGER_H__ 1
+#ifndef PLUGINMANAGER_H
+#define PLUGINMANAGER_H 1
 #include "plugin_library.hpp"
 #include "plugin.hpp"
 #include <vector>

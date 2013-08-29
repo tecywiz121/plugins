@@ -1,6 +1,6 @@
-#ifndef __INVOKER_H__
-#define __INVOKER_H__ 1
-#define __IN_INVOKER_H__ 1
+#ifndef INVOKER_H
+#define INVOKER_H 1
+#define IN_INVOKER_H 1
 
 template<typename TReturn, typename First=void, typename... Rest>
 class invoker {
@@ -43,5 +43,5 @@ INVOKER_SPECIALIZATION_H(double)
 INVOKER_SPECIALIZATION_H(void*)
 INVOKER_SPECIALIZATION_H(const char*)
 #include "invoker.cpp"
-#undef __IN_INVOKER_H__
+#undef IN_INVOKER_H
 #endif
