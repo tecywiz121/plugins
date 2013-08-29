@@ -14,11 +14,13 @@ class function {
 private:
     void check_signature(int fromend, char type);
     void check_return(char type);
+    char parse_return(const std::string& sig) const;
+    std::string parse_args(const std::string& sig) const;
 protected:
     const std::string _name;
     const std::string _signature;
-    std::string _arguments;
-    char _return;
+    const std::string _arguments;
+    const char _return;
     virtual void begin_call() =0;
     virtual void end_call() =0;
     virtual void arg_bool(bool v) =0;
@@ -57,8 +59,8 @@ public:
     function(const std::string& name, const std::string& signature);
     template<typename TReturn, typename... Arguments>
     TReturn invoke(Arguments... args);
-    const std::string& name();
-    const std::string& signature();
+    const std::string& name() const;
+    const std::string& signature() const;
 };
 
 class dyncall_function : public function {

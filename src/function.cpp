@@ -5,29 +5,43 @@
 #include "dyncall.h"
 
 function::function(const std::string& name, const std::string& sig)
-    : _name(name), _signature(sig)
+    : _name(name), _signature(sig), _arguments(parse_args(sig)),
+    _return(parse_return(sig))
 {
-    std::stringstream ss;
+}
+
+char function::parse_return(const std::string& sig) const
+{
     bool ret = false;
+    char rtype = 'v';
 
     for (char c : sig) {
         if (ret) {
-            _return = c;
+            rtype = c;
+            break;
         } else if (c == ')') {
             ret = true;
-        } else {
-            ss << c;
         }
     }
 
-    if (!ret) {
-        _return = 'v';
-    }
-
-    _arguments = ss.str();
+    return rtype;
 }
 
-const std::string& function::name()
+std::string function::parse_args(const std::string& sig) const
+{
+    std::stringstream ss;
+
+    for (char c : sig) {
+        if (c == ')') {
+            break;
+        }
+        ss << c;
+    }
+
+    return ss.str();
+}
+
+const std::string& function::name() const
 {
     return _name;
 }
