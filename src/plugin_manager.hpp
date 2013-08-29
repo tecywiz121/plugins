@@ -6,8 +6,7 @@
 #include <memory>
 #include <unordered_map>
 
-class plugin_manager
-{
+class plugin_manager {
     private:
         std::unordered_map<std::string, std::unique_ptr<plugin_library> > _libraries;
         plugin_library& load_library(std::string path);

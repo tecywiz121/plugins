@@ -10,24 +10,17 @@ function::function(const std::string& name, const std::string& sig)
     std::stringstream ss;
     bool ret = false;
 
-    for (char c : sig)
-    {
-        if (ret)
-        {
+    for (char c : sig) {
+        if (ret) {
             _return = c;
-        }
-        else if (c == ')')
-        {
+        } else if (c == ')') {
             ret = true;
-        }
-        else
-        {
+        } else {
             ss << c;
         }
     }
 
-    if (!ret)
-    {
+    if (!ret) {
         _return = 'v';
     }
 
@@ -41,8 +34,7 @@ const std::string& function::name()
 
 void function::check_signature(int fromend, char type)
 {
-    if (_arguments[_arguments.size() - fromend] != type)
-    {
+    if (_arguments[_arguments.size() - fromend] != type) {
         end_call();
         throw std::exception();
     }
@@ -50,8 +42,7 @@ void function::check_signature(int fromend, char type)
 
 void function::check_return(char type)
 {
-    if (_return != type)
-    {
+    if (_return != type) {
         end_call();
         throw std::exception();
     }
@@ -65,8 +56,7 @@ dyncall_function::dyncall_function(std::string& name, std::string& sig, fptr fun
 
 void dyncall_function::begin_call()
 {
-    if (_vm)
-    {
+    if (_vm) {
         // Can't have two at the same time
         throw std::exception();
     }
@@ -78,8 +68,7 @@ void dyncall_function::begin_call()
 
 void dyncall_function::end_call()
 {
-    if (_vm)
-    {
+    if (_vm) {
         dcFree(_vm);
         _vm = 0;
     }
@@ -248,8 +237,7 @@ plugin_function::plugin_function(std::string& name, std::string& sig,
 
 void plugin_function::begin_call()
 {
-    if (_call_data)
-    {
+    if (_call_data) {
         // Only one call at a time
         throw std::exception();
     }
@@ -258,8 +246,7 @@ void plugin_function::begin_call()
 
 void plugin_function::end_call()
 {
-    if (_call_data)
-    {
+    if (_call_data) {
         _interface->plugin_invoke.end_call(_call_data);
         _call_data = 0;
     }

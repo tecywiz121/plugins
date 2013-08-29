@@ -18,11 +18,10 @@ typedef int (*destroy_fptr)(int);
 typedef int (*argument_fptr)(int, const char*, const char*);
 typedef int (*start_fptr)(int);
 
-extern "C" typedef int register_plugin_func_t(void*, int, const char*, const char*);
-extern "C" typedef int register_plugin_func_c_t(void*, const char*, const char*, fptr);
+extern "C" typedef int ext_register_plugin_func(void*, int, const char*, const char*);
+extern "C" typedef int ext_register_plugin_func_c(void*, const char*, const char*, fptr);
 
-class plugin_library
-{
+class plugin_library {
     friend class plugin;
     friend class plugin_function;
 
@@ -31,8 +30,8 @@ class plugin_library
         std::unordered_map<int, std::unique_ptr<plugin> > _plugins;
         int register_plugin_func(int id, std::string& name, std::string& sig);
         int register_plugin_func_c(std::string& name, std::string& sig, fptr func);
-        static register_plugin_func_t _register_plugin_func;
-        static register_plugin_func_c_t _register_plugin_func_c;
+        static ext_register_plugin_func _register_plugin_func;
+        static ext_register_plugin_func_c _register_plugin_func_c;
 
     protected:
         // Plugin API

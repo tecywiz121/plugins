@@ -11,16 +11,14 @@ plugin::plugin(const plugin_library& library, int newid)
 
 void plugin::start()
 {
-    if (_library._start(id) == 0)
-    {
+    if (_library._start(id) == 0) {
         throw std::exception();
     }
 }
 
 void plugin::argument(std::string key, std::string value)
 {
-    if (_library._argument(id, key.c_str(), value.c_str()) == 0)
-    {
+    if (_library._argument(id, key.c_str(), value.c_str()) == 0) {
         throw std::exception();
     }
 }

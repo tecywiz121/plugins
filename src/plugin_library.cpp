@@ -29,16 +29,13 @@ int plugin_library::_register_plugin_func_c(void* host, const char* name, const 
 
 int plugin_library::register_plugin_func(int id, std::string& name, std::string& sig)
 {
-    try
-    {
+    try {
         plugin& plug = *_plugins.at(id);
         plugin_function *func = new plugin_function(name, sig, plug);
         std::unique_ptr<plugin_function> func_ptr(func);
         plug.register_plugin_function(move(func_ptr));
         return 1;
-    }
-    catch (std::out_of_range& e)
-    {
+    } catch (std::out_of_range& e) {
         return 0;
     }
 }
@@ -52,8 +49,7 @@ void plugin_library::load(std::string& path)
 {
     _libptr = dlLoadLibrary(path.c_str());
 
-    if (!_libptr)
-    {
+    if (!_libptr) {
         throw std::exception();
     }
 
@@ -64,8 +60,7 @@ void plugin_library::load(std::string& path)
     *reinterpret_cast<void**>(&_start) = dlFindSymbol(_libptr, "start");
 
     _interface = static_cast<struct plugin_interface*>(dlFindSymbol(_libptr, "plugin_interface"));
-    if (!(_interface && _create && _destroy && _argument && _start))
-    {
+    if (!(_interface && _create && _destroy && _argument && _start)) {
         throw std::exception();
     }
 
@@ -78,8 +73,7 @@ plugin& plugin_library::create()
 {
     int id = _create();
 
-    if (id == 0)
-    {
+    if (id == 0) {
         throw std::exception();
     }
 
@@ -97,8 +91,7 @@ void plugin_library::destroy(plugin& plug)
 plugin_library::~plugin_library()
 {
     _plugins.clear();
-    if (_libptr)
-    {
+    if (_libptr) {
         dlFreeLibrary(_libptr);
         _create = 0;
         _destroy = 0;

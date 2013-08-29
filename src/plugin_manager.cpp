@@ -16,12 +16,9 @@ plugin_manager::plugin_manager()
 
 plugin_library& plugin_manager::load_library(std::string path)
 {
-    try
-    {
+    try {
         return *_libraries.at(path);
-    }
-    catch (std::out_of_range& e)
-    {
+    } catch (std::out_of_range& e) {
         std::unique_ptr<plugin_library> lib(new plugin_library());
         plugin_library& result = *lib;
         lib->load(path);
@@ -37,8 +34,7 @@ plugin& plugin_manager::load_plugin(std::string path)
     plugin_library& library = load_library(desc.module());
     plugin& plug = library.create();
 
-    for (std::pair<std::string, std::string> p : desc.arguments())
-    {
+    for (std::pair<std::string, std::string> p : desc.arguments()) {
         plug.argument(p.first, p.second);
     }
 

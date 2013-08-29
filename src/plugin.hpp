@@ -9,8 +9,7 @@ class plugin_library;
 
 class plugin_function;
 
-class plugin
-{
+class plugin {
     friend class plugin_library;
     friend class plugin_function;
     private:

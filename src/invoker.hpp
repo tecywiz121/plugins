@@ -3,22 +3,19 @@
 #define __IN_INVOKER_H__ 1
 
 template<typename TReturn, typename First=void, typename... Rest>
-class invoker
-{
+class invoker {
 public:
     static TReturn invoke(function& func, First first, Rest... rest);
 };
 
 template<typename TReturn>
-class invoker<TReturn, void>
-{
+class invoker<TReturn, void> {
 public:
     static TReturn invoke(function& func);
 };
 
 #define INVOKER_SPECIALIZATION_H(type) template<typename TReturn, typename... Rest> \
-class invoker <TReturn, type, Rest...>                                              \
-{                                                                                   \
+class invoker <TReturn, type, Rest...> {                                            \
 public:                                                                             \
     static TReturn invoke(function& func, type first, Rest... rest);                \
 };

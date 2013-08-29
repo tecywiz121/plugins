@@ -9,8 +9,7 @@ typedef void (*fptr)(void);
 
 template<typename TReturn, typename First, typename... Rest> class invoker;
 
-class function
-{
+class function {
     template<typename TReturn, typename First, typename... Rest> friend class invoker;
 private:
     void check_signature(int fromend, char type);
@@ -62,8 +61,7 @@ public:
     const std::string& signature();
 };
 
-class dyncall_function : public function
-{
+class dyncall_function : public function {
 private:
     DCCallVM *_vm = 0;
     void* _func;
@@ -106,8 +104,7 @@ public:
     dyncall_function(std::string& name, std::string& sig, fptr func);
 };
 
-class plugin_function : public function
-{
+class plugin_function : public function {
 private:
     struct plugin_interface* _interface;
     const int _id;
@@ -156,8 +153,7 @@ public:
 template<typename TReturn, typename... Arguments>
 TReturn function::invoke(Arguments... args)
 {
-    if (sizeof...(args) != _arguments.size())
-    {
+    if (sizeof...(args) != _arguments.size()) {
         throw std::exception();
     }
     begin_call();

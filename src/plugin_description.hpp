@@ -5,8 +5,7 @@
 #include <exception>
 #include <unordered_map>
 
-class bad_parse : public std::exception
-{
+class bad_parse : public std::exception {
     private:
         std::string _msg;
     public:
@@ -15,8 +14,7 @@ class bad_parse : public std::exception
         virtual const char* what() const throw ();
 };
 
-class plugin_description
-{
+class plugin_description {
     private:
         std::string _module;
         std::unordered_map<std::string, std::string> _arguments;

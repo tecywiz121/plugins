@@ -6,11 +6,9 @@
 
 int main(int argc, char** argv)
 {
-    if (argc <= 1)
-    {
+    if (argc <= 1) {
         std::string me = "main";
-        if (argc == 1)
-        {
+        if (argc == 1) {
             me = std::string(argv[0]);
         }
 
@@ -20,8 +18,7 @@ int main(int argc, char** argv)
 
     plugin_manager manager;
 
-    for (int ii = 1; ii < argc; ii++)
-    {
+    for (int ii = 1; ii < argc; ii++) {
         plugin& plugin = manager.load_plugin(argv[ii]);
         plugin.start();
 

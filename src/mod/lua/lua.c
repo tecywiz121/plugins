@@ -15,18 +15,18 @@ extern "C" {
 #endif
 
 //
-// call_info_t - A structure containing a single call to a lua function
+// struct call_info - A structure containing a single call to a lua function
 //
-typedef struct call_info {
+struct call_info {
     lua_State* state;
     const char* function_name;
     int n_args;
     int called;
-} call_info_t;
+};
 
-static call_info_t *call_info_init(lua_State* state, const char* function_name)
+static struct call_info *call_info_init(lua_State* state, const char* function_name)
 {
-    call_info_t *inst = (call_info_t *)malloc(sizeof(call_info_t));
+    struct call_info *inst = (struct call_info *)malloc(sizeof(struct call_info));
     inst->state = state;
     inst->function_name = function_name;
     inst->n_args = 0;
@@ -34,7 +34,7 @@ static call_info_t *call_info_init(lua_State* state, const char* function_name)
     return inst;
 }
 
-static void call_info_destroy(call_info_t *inst)
+static void call_info_destroy(struct call_info *inst)
 {
     if (!inst->called)
     {
@@ -46,23 +46,23 @@ static void call_info_destroy(call_info_t *inst)
 }
 
 //
-// instance_t - An instance of the lua intepreter and the path to its script
+// struct instance - An instance of the lua intepreter and the path to its script
 //
-typedef struct instance {
+struct instance {
     lua_State* state;
     const char* path;
-    kvec_t(call_info_t *) callstack;
-} instance_t;
+    kvec_t(struct call_info *) callstack;
+};
 
-static instance_t *instance_init(lua_State* state)
+static struct instance *instance_init(lua_State* state)
 {
-    instance_t *inst = (instance_t *)malloc(sizeof(instance_t));
+    struct instance *inst = (struct instance *)malloc(sizeof(struct instance));
     inst->state = state;
     kv_init(inst->callstack);
     return inst;
 }
 
-static void instance_destroy(instance_t *inst)
+static void instance_destroy(struct instance *inst)
 {
     lua_close(inst->state);
     kv_destroy(inst->callstack);
@@ -72,7 +72,7 @@ static void instance_destroy(instance_t *inst)
 struct plugin_interface plugin_interface;
 
 // Initialize the hashmap
-KHASH_MAP_INIT_INT(m32, instance_t *)
+KHASH_MAP_INIT_INT(m32, struct instance *)
 static khash_t(m32) *states = 0;
 
 // Stores the next id to assign to a lua plugin
@@ -112,7 +112,7 @@ static int reg_plugin_func(lua_State *l)
         if (kh_exist(states, k))
         {
             int key = kh_key(states, k);
-            instance_t *val = kh_val(states, k);
+            struct instance *val = kh_val(states, k);
 
             if (val->state == l)
             {
@@ -158,7 +158,7 @@ int create(void)
     openlualibs(l);
     regluafuncs(l);
 
-    instance_t *inst = instance_init(l);
+    struct instance *inst = instance_init(l);
 
     // Find an unused key
     int ret = 0;
@@ -186,7 +186,7 @@ int destroy(int id)
     khint_t key = kh_get(m32, states, id);
     if (key != kh_end(states)) // check thet key exists
     {
-        instance_t* inst = kh_val(states, key);
+        struct instance* inst = kh_val(states, key);
         kh_del(m32, states, key);
         instance_destroy(inst);
         return 1;
@@ -204,7 +204,7 @@ int argument(int id, char* key, char* value)
         khint_t key = kh_get(m32, states, id);
         if (key != kh_end(states))
         {
-            instance_t* inst = kh_val(states, key);
+            struct instance* inst = kh_val(states, key);
             inst->path = value;
             return 1;
         }
@@ -224,7 +224,7 @@ int start(int id)
     khint_t key = kh_get(m32, states, id);
     if (key != kh_end(states))
     {
-        instance_t* inst = kh_val(states, key);
+        struct instance* inst = kh_val(states, key);
         printf("Starting script: %s\n", inst->path);
         if (luaL_dofile(inst->state, inst->path))
         {
@@ -247,15 +247,15 @@ static void* begin_call(int id, const char* name)
     if (key != kh_end(states))
     {
         // TODO: Keep track of which functions have been registered
-        instance_t* inst = kh_val(states, key);
-        call_info_t *info = call_info_init(inst->state, name);
+        struct instance* inst = kh_val(states, key);
+        struct call_info *info = call_info_init(inst->state, name);
 
         // Push the function to call onto the lua stack
         lua_getglobal(inst->state, name);
         info->n_args++;
 
         // Push our call_info onto our callstack
-        kv_push(call_info_t*, inst->callstack, info);
+        kv_push(struct call_info*, inst->callstack, info);
         return inst;
     }
     else
@@ -266,15 +266,15 @@ static void* begin_call(int id, const char* name)
 
 static void end_call(void* call)
 {
-    instance_t *inst = (instance_t *)call;
-    call_info_t *info = kv_pop(inst->callstack);
+    struct instance *inst = (struct instance *)call;
+    struct call_info *info = kv_pop(inst->callstack);
     call_info_destroy(info);
 }
 
 static void ret_void(void* call)
 {
-    instance_t *inst = (instance_t *)call;
-    call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
+    struct instance *inst = (struct instance *)call;
+    struct call_info *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
     info->called = true;
     if (lua_pcall(info->state, info->n_args - 1, 0, 0))
     {
@@ -284,16 +284,16 @@ static void ret_void(void* call)
 
 static void ret_not_implemented(void* call)
 {
-    instance_t *inst = (instance_t *)call;
-    call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
+    struct instance *inst = (struct instance *)call;
+    struct call_info *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);
     luaL_error(info->state, "return type not implemented yet");
 }
 
 #define RET_FUNC(name, type, lua_type)                                                      \
     static type ret_##name(void* call)                                                      \
     {                                                                                       \
-        instance_t *inst = (instance_t *)call;                                              \
-        call_info_t *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);            \
+        struct instance *inst = (struct instance *)call;                                    \
+        struct call_info *info = kv_A(inst->callstack, kv_size(inst->callstack) - 1);       \
         info->called = true;                                                                \
         if (lua_pcall(info->state, info->n_args - 1, 1, 0))                                 \
         {                                                                                   \
