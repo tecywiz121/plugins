@@ -3,43 +3,40 @@
 #endif
 
 template<typename TReturn>
-TReturn invoker<TReturn, void>::invoke(function& func)
+TReturn invoker<TReturn, void>::invoke(invocation& inv)
 {
     static_assert(sizeof(TReturn) < 0, "unsupported return type");
     return TReturn();
 }
 
 template<>
-inline void invoker<void, void>::invoke(function& func)
+inline void invoker<void, void>::invoke(invocation& inv)
 {
-    func.check_return('v');
-    func.ret_void();
-    func.end_call();
+    inv.of().check_return('v');
+    inv.ret_void();
 }
 
 template<typename TReturn, typename First, typename... Rest>
-inline TReturn invoker<TReturn, First, Rest...>::invoke(function& func, First first, Rest... rest)
+inline TReturn invoker<TReturn, First, Rest...>::invoke(invocation& inv, First first, Rest... rest)
 {
     static_assert(sizeof(First) < 0, "argument type not supported");
-    return invoker<TReturn, Rest...>::invoke(func, rest...);
+    return invoker<TReturn, Rest...>::invoke(inv, rest...);
 }
 
 #define INVOKER_SPECIALIZATION(type, ch, ff) template<typename TReturn, typename... Rest>           \
-inline TReturn invoker<TReturn, type, Rest...>::invoke(function& func, type first, Rest... rest)    \
+inline TReturn invoker<TReturn, type, Rest...>::invoke(invocation& inv, type first, Rest... rest)   \
 {                                                                                                   \
     const unsigned short int argc = sizeof...(rest) + 1;                                            \
-    func.check_signature(argc, ch);                                                                 \
-    func.arg_##ff(first);                                                                           \
-    return invoker<TReturn, Rest...>::invoke(func, rest...);                                        \
+    inv.of().check_signature(argc, ch);                                                             \
+    inv.arg_##ff(first);                                                                            \
+    return invoker<TReturn, Rest...>::invoke(inv, rest...);                                         \
 }                                                                                                   \
                                                                                                     \
 template<>                                                                                          \
-inline type invoker<type, void>::invoke(function& func)                                             \
+inline type invoker<type, void>::invoke(invocation& inv)                                            \
 {                                                                                                   \
-    func.check_return(ch);                                                                          \
-    type retval = func.ret_##ff();                                                                  \
-    func.end_call();                                                                                \
-    return retval;                                                                                  \
+    inv.of().check_return(ch);                                                                      \
+    return inv.ret_##ff();                                                                          \
 }
 
 

@@ -1,23 +1,25 @@
 #ifndef INVOKER_H
 #define INVOKER_H 1
 #define IN_INVOKER_H 1
+#include "invocation.hpp"
+
 
 template<typename TReturn, typename First=void, typename... Rest>
 class invoker {
 public:
-    static TReturn invoke(function& func, First first, Rest... rest);
+    static TReturn invoke(invocation& func, First first, Rest... rest);
 };
 
 template<typename TReturn>
 class invoker<TReturn, void> {
 public:
-    static TReturn invoke(function& func);
+    static TReturn invoke(invocation& func);
 };
 
 #define INVOKER_SPECIALIZATION_H(type) template<typename TReturn, typename... Rest> \
 class invoker <TReturn, type, Rest...> {                                            \
 public:                                                                             \
-    static TReturn invoke(function& func, type first, Rest... rest);                \
+    static TReturn invoke(invocation& inv, type first, Rest... rest);               \
 };
 
 INVOKER_SPECIALIZATION_H(bool)

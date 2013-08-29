@@ -14,7 +14,7 @@ add_subdirectory(${SHAREDOBJ_SOURCE_DIR}/lib/dyncall)
 set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Werror -Wstrict-aliasing -std=c++11 -pedantic")
 
 include_directories(${SHAREDOBJ_SOURCE_DIR}/include)
-add_executable(sharedobj src/loader.cpp src/plugin.cpp src/plugin_manager.cpp src/plugin_description.cpp src/plugin_library.cpp src/function.cpp)
+add_executable(sharedobj src/loader.cpp src/plugin.cpp src/plugin_manager.cpp src/plugin_description.cpp src/plugin_library.cpp src/function.cpp src/invocation.cpp)
 
 include_directories("${SHAREDOBJ_SOURCE_DIR}/${DYNCALL_DIR}/dynload")
 include_directories("${SHAREDOBJ_SOURCE_DIR}/${DYNCALL_DIR}/dyncall")
