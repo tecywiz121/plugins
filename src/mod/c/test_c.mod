@@ -1,2 +1,2 @@
-[src/mod/lua/libmod_c.so]
+[src/mod/c/libmod_c.so]
 
