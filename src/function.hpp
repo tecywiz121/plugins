@@ -11,7 +11,9 @@ class invocation;
 template<typename TReturn, typename First, typename... Rest> class invoker;
 
 class function {
-    template<typename TReturn, typename First, typename... Rest> friend class invoker;
+    template<typename TReturn, typename First, typename... Rest>
+    friend class invoker;
+
 private:
     const std::string _name;
     const std::string _signature;
@@ -39,7 +41,8 @@ private:
 protected:
     virtual std::unique_ptr<invocation> begin_call() const;
 public:
-    dyncall_function(const std::string& name, const std::string& sig, fptr func);
+    dyncall_function(const std::string& name, const std::string& sig,
+                     fptr func);
     virtual ~dyncall_function();
 };
 

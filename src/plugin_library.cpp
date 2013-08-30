@@ -11,7 +11,8 @@
 #include "plugin_description.hpp"
 #include "function.hpp"
 
-int plugin_library::_register_plugin_func(void* host, int id, const char* name, const char* sig)
+int plugin_library::_register_plugin_func(void* host, int id, const char* name,
+                                          const char* sig)
 {
     plugin_library* lib = (plugin_library*)host;
     std::string sName(name);
@@ -19,7 +20,8 @@ int plugin_library::_register_plugin_func(void* host, int id, const char* name, 
     return lib->register_plugin_func(id, sName, sSig);
 }
 
-int plugin_library::_register_plugin_func_c(void* host, const char* name, const char* sig, fptr func)
+int plugin_library::_register_plugin_func_c(void* host, const char* name,
+                                            const char* sig, fptr func)
 {
     plugin_library* lib = (plugin_library*)host;
     std::string sName(name);
@@ -27,7 +29,8 @@ int plugin_library::_register_plugin_func_c(void* host, const char* name, const 
     return lib->register_plugin_func_c(sName, sSig, func);
 }
 
-int plugin_library::register_plugin_func(int id, std::string& name, std::string& sig)
+int plugin_library::register_plugin_func(int id, std::string& name,
+                                         std::string& sig)
 {
     try {
         plugin& plug = *_plugins.at(id);
@@ -40,7 +43,9 @@ int plugin_library::register_plugin_func(int id, std::string& name, std::string&
     }
 }
 
-int plugin_library::register_plugin_func_c(UNUSED(std::string& name), UNUSED(std::string& sig), UNUSED(fptr func))
+int plugin_library::register_plugin_func_c(UNUSED(std::string& name),
+                                           UNUSED(std::string& sig),
+                                           UNUSED(fptr func))
 {
     return 1;
 }
@@ -53,13 +58,16 @@ void plugin_library::load(std::string& path)
         throw std::exception();
     }
 
-    // Get around object-to-function pointer restrictions (http://stackoverflow.com/a/1096349)
+    // Get around object-to-function pointer restrictions
+    // From: http://stackoverflow.com/a/1096349
     *reinterpret_cast<void**>(&_create) = dlFindSymbol(_libptr, "create");
     *reinterpret_cast<void**>(&_destroy) = dlFindSymbol(_libptr, "destroy");
     *reinterpret_cast<void**>(&_argument) = dlFindSymbol(_libptr, "argument");
     *reinterpret_cast<void**>(&_start) = dlFindSymbol(_libptr, "start");
 
-    _interface = static_cast<struct plugin_interface*>(dlFindSymbol(_libptr, "plugin_interface"));
+    _interface =
+        static_cast<struct plugin_interface*>(dlFindSymbol(_libptr,
+                                                           "plugin_interface"));
     if (!(_interface && _create && _destroy && _argument && _start)) {
         throw std::exception();
     }

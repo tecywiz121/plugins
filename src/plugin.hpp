@@ -14,7 +14,8 @@ class plugin {
     friend class plugin_function;
     private:
         const plugin_library& _library;
-        std::unordered_map<std::string, std::unique_ptr<plugin_function> > _functions;
+        std::unordered_map<std::string, std::unique_ptr<plugin_function> >
+                                                                    _functions;
 
         void register_plugin_function(std::unique_ptr<plugin_function> func);
 

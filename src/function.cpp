@@ -65,7 +65,8 @@ function::~function()
 
 }
 
-dyncall_function::dyncall_function(const std::string& name, const std::string& sig, fptr func)
+dyncall_function::dyncall_function(const std::string& name,
+                                   const std::string& sig, fptr func)
     : function(name, sig)
 {
     _func = *reinterpret_cast<void**>(&func);

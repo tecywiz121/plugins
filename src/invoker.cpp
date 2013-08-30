@@ -17,48 +17,53 @@ inline void invoker<void, void>::invoke(invocation& inv)
 }
 
 template<typename TReturn, typename First, typename... Rest>
-inline TReturn invoker<TReturn, First, Rest...>::invoke(invocation& inv, First first, Rest... rest)
+inline TReturn invoker<TReturn, First, Rest...>::invoke(invocation& inv,
+                                                        First first,
+                                                        Rest... rest)
 {
     static_assert(sizeof(First) < 0, "argument type not supported");
     return invoker<TReturn, Rest...>::invoke(inv, rest...);
 }
 
-#define INVOKER_SPECIALIZATION(type, ch, ff) template<typename TReturn, typename... Rest>           \
-inline TReturn invoker<TReturn, type, Rest...>::invoke(invocation& inv, type first, Rest... rest)   \
-{                                                                                                   \
-    const unsigned short int argc = sizeof...(rest) + 1;                                            \
-    inv.of().check_signature(argc, ch);                                                             \
-    inv.arg_##ff(first);                                                                            \
-    return invoker<TReturn, Rest...>::invoke(inv, rest...);                                         \
-}                                                                                                   \
-                                                                                                    \
-template<>                                                                                          \
-inline type invoker<type, void>::invoke(invocation& inv)                                            \
-{                                                                                                   \
-    inv.of().check_return(ch);                                                                      \
-    return inv.ret_##ff();                                                                          \
+#define INVOKER_SPEC(type, ch, ff)                                          \
+template<typename TReturn, typename... Rest>                                \
+inline TReturn invoker<TReturn, type, Rest...>::invoke(invocation& inv,     \
+                                                       type first,          \
+                                                       Rest... rest)        \
+{                                                                           \
+    const unsigned short int argc = sizeof...(rest) + 1;                    \
+    inv.of().check_signature(argc, ch);                                     \
+    inv.arg_##ff(first);                                                    \
+    return invoker<TReturn, Rest...>::invoke(inv, rest...);                 \
+}                                                                           \
+                                                                            \
+template<>                                                                  \
+inline type invoker<type, void>::invoke(invocation& inv)                    \
+{                                                                           \
+    inv.of().check_return(ch);                                              \
+    return inv.ret_##ff();                                                  \
 }
 
 
-INVOKER_SPECIALIZATION(bool, 'b', bool)
+INVOKER_SPEC(bool, 'b', bool)
 
-INVOKER_SPECIALIZATION(char, 'c', char)
-INVOKER_SPECIALIZATION(unsigned char, 'C', uchar)
+INVOKER_SPEC(char, 'c', char)
+INVOKER_SPEC(unsigned char, 'C', uchar)
 
-INVOKER_SPECIALIZATION(short, 's', short)
-INVOKER_SPECIALIZATION(unsigned short, 'S', ushort)
+INVOKER_SPEC(short, 's', short)
+INVOKER_SPEC(unsigned short, 'S', ushort)
 
-INVOKER_SPECIALIZATION(int, 'i', int)
-INVOKER_SPECIALIZATION(unsigned int, 'I', uint)
+INVOKER_SPEC(int, 'i', int)
+INVOKER_SPEC(unsigned int, 'I', uint)
 
-INVOKER_SPECIALIZATION(long, 'j', long)
-INVOKER_SPECIALIZATION(unsigned long, 'J', ulong)
+INVOKER_SPEC(long, 'j', long)
+INVOKER_SPEC(unsigned long, 'J', ulong)
 
-INVOKER_SPECIALIZATION(long long, 'l', longlong)
-INVOKER_SPECIALIZATION(unsigned long long, 'L', ulonglong)
+INVOKER_SPEC(long long, 'l', longlong)
+INVOKER_SPEC(unsigned long long, 'L', ulonglong)
 
-INVOKER_SPECIALIZATION(float, 'f', float)
-INVOKER_SPECIALIZATION(double, 'd', double)
+INVOKER_SPEC(float, 'f', float)
+INVOKER_SPEC(double, 'd', double)
 
-INVOKER_SPECIALIZATION(void*, 'p', pointer)
-INVOKER_SPECIALIZATION(const char*, 'Z', c_str)
+INVOKER_SPEC(void*, 'p', pointer)
+INVOKER_SPEC(const char*, 'Z', c_str)
