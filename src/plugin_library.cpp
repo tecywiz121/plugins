@@ -10,6 +10,7 @@
 #include "plugin_library.hpp"
 #include "plugin_description.hpp"
 #include "function.hpp"
+#include "plugin_manager.hpp"
 
 int plugin_library::_register_plugin_func(void* host, int id, const char* name,
                                           const char* sig)
@@ -30,6 +31,12 @@ int plugin_library::_register_plugin_func_c(void* host, int id,
     return lib->register_plugin_func(id, sName, sSig, func);
 }
 
+plugin_library::plugin_library(plugin_manager& manager)
+    : _manager(manager)
+{
+
+}
+
 int plugin_library::register_plugin_func(int id, std::string& name,
                                          std::string& sig)
 {
@@ -37,6 +44,7 @@ int plugin_library::register_plugin_func(int id, std::string& name,
         plugin& plug = *_plugins.at(id);
         plugin_function *func = new plugin_function(name, sig, plug);
         std::unique_ptr<plugin_function> func_ptr(func);
+        _manager.register_function(*func_ptr);
         plug.register_function(move(func_ptr));
         return 1;
     } catch (std::out_of_range& e) {
@@ -51,6 +59,7 @@ int plugin_library::register_plugin_func(int id, std::string& name,
         plugin& plug = *_plugins.at(id);
         dyncall_function *pfunc = new dyncall_function(name, sig, func);
         std::unique_ptr<dyncall_function> func_ptr(pfunc);
+        _manager.register_function(*func_ptr);
         plug.register_function(move(func_ptr));
         return 1;
     } catch (std::out_of_range& e) {

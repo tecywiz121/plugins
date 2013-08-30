@@ -28,7 +28,7 @@ protected:
 public:
     function(const std::string& name, const std::string& signature);
     template<typename TReturn, typename... Arguments>
-    TReturn invoke(Arguments... args);
+    TReturn invoke(Arguments... args) const;
     const std::string& name() const;
     const std::string& signature() const;
     virtual ~function();
@@ -61,7 +61,7 @@ public:
 #include "invoker.hpp"
 
 template<typename TReturn, typename... Arguments>
-TReturn function::invoke(Arguments... args)
+TReturn function::invoke(Arguments... args) const
 {
     if (sizeof...(args) != _arguments.size()) {
         throw std::exception();

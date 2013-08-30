@@ -10,6 +10,7 @@
 
 class plugin;
 class plugin_function;
+class plugin_manager;
 
 typedef void (*fptr)();
 
@@ -28,6 +29,7 @@ class plugin_library {
     friend class plugin_function;
 
     private:
+        plugin_manager& _manager;
         DLLib* _libptr;
         std::unordered_map<int, std::unique_ptr<plugin> > _plugins;
         int register_plugin_func(int id, std::string& name, std::string& sig);
@@ -45,6 +47,7 @@ class plugin_library {
         struct plugin_interface* _interface;
 
     public:
+        plugin_library(plugin_manager& manager);
         void load(std::string& path);
         plugin& create();
         void destroy(plugin& plugin);
