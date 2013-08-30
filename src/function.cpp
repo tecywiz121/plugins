@@ -85,7 +85,7 @@ dyncall_function::~dyncall_function()
 
 plugin_function::plugin_function(std::string& name, std::string& sig,
                                 plugin& plug)
-    : function(name, sig), _interface(plug._library._interface), _id(plug.id)
+    : function(name, sig), _interface(plug._library._interface), _id(plug.id())
 {
 }
 

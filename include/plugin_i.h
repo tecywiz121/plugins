@@ -67,8 +67,8 @@ struct plugin_interface {
     // Host Provided Callbacks
     void* host;
     int (*register_func)(void* host, int id, const char* name, const char* sig);
-    int (*register_func_c)(void* host, const char* name, const char* sig,
-        void (*)());
+    int (*register_func_c)(void* host, int id, const char* name,
+                           const char* sig, void (*)());
 
     const char* (*describe_func)(void* host, const char* name);
 

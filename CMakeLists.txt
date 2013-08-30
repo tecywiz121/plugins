@@ -23,6 +23,8 @@ target_link_libraries(sharedobj dynload_s dyncall_s ${CMAKE_DL_LIBS})
 # Build optional modules
 find_package(Lua51)
 
+add_subdirectory(${SHAREDOBJ_SOURCE_DIR}/src/mod/c)
+
 if (LUA51_FOUND)
     add_subdirectory(${SHAREDOBJ_SOURCE_DIR}/src/mod/lua)
 endif (LUA51_FOUND)

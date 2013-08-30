@@ -5,35 +5,35 @@
 #include "function.hpp"
 
 plugin::plugin(const plugin_library& library, int newid)
-    : _library(library), id(newid)
+    : _id(newid), _library(library)
 {
 }
 
 void plugin::start()
 {
-    if (_library._start(id) == 0) {
+    if (_library._start(_id) == 0) {
         throw std::exception();
     }
 }
 
 void plugin::argument(std::string key, std::string value)
 {
-    if (_library._argument(id, key.c_str(), value.c_str()) == 0) {
+    if (_library._argument(_id, key.c_str(), value.c_str()) == 0) {
         throw std::exception();
     }
 }
 
-void plugin::register_plugin_function(std::unique_ptr<plugin_function> func)
+void plugin::register_function(std::unique_ptr<function> func)
 {
     _functions[func->name()] = std::move(func);
 }
 
-plugin_function& plugin::get_function(const std::string& name)
+function& plugin::get_function(const std::string& name)
 {
-    return *_functions[name];
+    return *_functions.at(name);
 }
 
 plugin::~plugin()
 {
-    _library._destroy(id);
+    _library._destroy(_id);
 }

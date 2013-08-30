@@ -20,7 +20,7 @@ typedef int (*start_fptr)(int);
 
 extern "C" typedef int ext_register_plugin_func(void*, int, const char*,
                                                 const char*);
-extern "C" typedef int ext_register_plugin_func_c(void*, const char*,
+extern "C" typedef int ext_register_plugin_func_c(void*, int, const char*,
                                                   const char*, fptr);
 
 class plugin_library {
@@ -31,7 +31,7 @@ class plugin_library {
         DLLib* _libptr;
         std::unordered_map<int, std::unique_ptr<plugin> > _plugins;
         int register_plugin_func(int id, std::string& name, std::string& sig);
-        int register_plugin_func_c(std::string& name, std::string& sig,
+        int register_plugin_func(int id, std::string& name, std::string& sig,
                                    fptr func);
         static ext_register_plugin_func _register_plugin_func;
         static ext_register_plugin_func_c _register_plugin_func_c;

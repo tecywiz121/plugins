@@ -20,13 +20,14 @@ int plugin_library::_register_plugin_func(void* host, int id, const char* name,
     return lib->register_plugin_func(id, sName, sSig);
 }
 
-int plugin_library::_register_plugin_func_c(void* host, const char* name,
-                                            const char* sig, fptr func)
+int plugin_library::_register_plugin_func_c(void* host, int id,
+                                            const char* name, const char* sig,
+                                            fptr func)
 {
     plugin_library* lib = (plugin_library*)host;
     std::string sName(name);
     std::string sSig(sig);
-    return lib->register_plugin_func_c(sName, sSig, func);
+    return lib->register_plugin_func(id, sName, sSig, func);
 }
 
 int plugin_library::register_plugin_func(int id, std::string& name,
@@ -36,18 +37,25 @@ int plugin_library::register_plugin_func(int id, std::string& name,
         plugin& plug = *_plugins.at(id);
         plugin_function *func = new plugin_function(name, sig, plug);
         std::unique_ptr<plugin_function> func_ptr(func);
-        plug.register_plugin_function(move(func_ptr));
+        plug.register_function(move(func_ptr));
         return 1;
     } catch (std::out_of_range& e) {
         return 0;
     }
 }
 
-int plugin_library::register_plugin_func_c(UNUSED(std::string& name),
-                                           UNUSED(std::string& sig),
-                                           UNUSED(fptr func))
+int plugin_library::register_plugin_func(int id, std::string& name,
+                                         std::string& sig, fptr func)
 {
-    return 1;
+    try {
+        plugin& plug = *_plugins.at(id);
+        dyncall_function *pfunc = new dyncall_function(name, sig, func);
+        std::unique_ptr<dyncall_function> func_ptr(pfunc);
+        plug.register_function(move(func_ptr));
+        return 1;
+    } catch (std::out_of_range& e) {
+        return 0;
+    }
 }
 
 void plugin_library::load(std::string& path)
@@ -93,7 +101,7 @@ plugin& plugin_library::create()
 
 void plugin_library::destroy(plugin& plug)
 {
-    _plugins.erase(plug.id);
+    _plugins.erase(plug.id());
 }
 
 plugin_library::~plugin_library()
