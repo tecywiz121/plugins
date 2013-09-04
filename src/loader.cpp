@@ -25,6 +25,7 @@ int main(int argc, char** argv)
 
     std::string nbanana("banana");
     std::string nsomething("do_something");
+    std::string ncsomething("call_do_something");
 
     try {
         const function& banana = manager.get_function(nbanana);
@@ -42,5 +43,12 @@ int main(int argc, char** argv)
         std::cout << "do_something not found :-(" << std::endl;
     }
 
+    try {
+        const function& call_do_something = manager.get_function(ncsomething);
+        std::cout << "call_do_something returned: "
+                  << call_do_something.invoke<int>(4.0f, 2.0f) << std::endl;
+    } catch (std::out_of_range& e) {
+        std::cout << "call_do_something not found :-(" << std::endl;
+    }
     return 0;
 }

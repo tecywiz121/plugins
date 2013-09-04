@@ -19,6 +19,17 @@ int do_something(float a, float b)
     return (int)(a*b);
 }
 
+int call_do_something(float a, float b)
+{
+    printf("Beginning call to host\n");
+    void* inv = plugin_interface.begin_host_call(plugin_interface.host, "do_something");
+    plugin_interface.host_invoke.arg_float(inv, a);
+    plugin_interface.host_invoke.arg_float(inv, b);
+    int retval = plugin_interface.host_invoke.ret_int(inv);
+    plugin_interface.end_host_call(plugin_interface.host, inv);
+    return retval;
+}
+
 //
 // Loader Interface
 //
@@ -56,5 +67,7 @@ int start(int id)
     printf("Starting C plugin.\n");
     plugin_interface.register_func_c(plugin_interface.host, id, "do_something",
                                      "ff)i", (void (*)(void))&do_something);
+    plugin_interface.register_func_c(plugin_interface.host, id, "call_do_something",
+                                     "ff)i", (void (*)(void))&call_do_something);
     return 1;
 }

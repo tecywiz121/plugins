@@ -2,6 +2,7 @@
 #include <iostream>
 #include "plugin.hpp"
 #include "plugin_library.hpp"
+#include "plugin_manager.hpp"
 #include "function.hpp"
 
 plugin::plugin(const plugin_library& library, int newid)

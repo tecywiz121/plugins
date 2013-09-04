@@ -192,7 +192,7 @@ plugin_invocation::plugin_invocation(const plugin_function& of)
 plugin_invocation::~plugin_invocation()
 {
     if (_call_data) {
-        _interface->plugin_invoke.end_call(_call_data);
+        _interface->end_plugin_call(_call_data);
         _call_data = 0;
     }
 }

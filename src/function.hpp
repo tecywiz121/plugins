@@ -8,11 +8,13 @@
 
 typedef void (*fptr)(void);
 class invocation;
+class plugin_library;
 template<typename TReturn, typename First, typename... Rest> class invoker;
 
 class function {
     template<typename TReturn, typename First, typename... Rest>
     friend class invoker;
+    friend class plugin_library;
 
 private:
     const std::string _name;

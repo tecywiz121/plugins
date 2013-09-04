@@ -4,6 +4,7 @@
 class plugin_library;
 
 #include <memory>
+#include <vector>
 #include <unordered_map>
 #include "plugin_library.hpp"
 

@@ -45,7 +45,7 @@ struct invoke_interface {
 
     void (*ret_void)(void* invocation);
     PBool (*ret_bool)(void* invocation);
-    char (*ret_char)(void* invocation);
+    signed char (*ret_char)(void* invocation);
     unsigned char (*ret_uchar)(void* invocation);
     short (*ret_short)(void* invocation);
     unsigned short (*ret_ushort)(void* invocation);
@@ -59,8 +59,6 @@ struct invoke_interface {
     double (*ret_double)(void* invocation);
     void* (*ret_pointer)(void* invocation);
     const char* (*ret_c_str)(void* invocation);
-
-    void (*end_call)(void* call);
 };
 
 struct plugin_interface {
@@ -74,10 +72,12 @@ struct plugin_interface {
 
     struct invoke_interface host_invoke;
     void* (*begin_host_call)(void* host, const char* name);
+    void (*end_host_call)(void* host, void* call); // TODO: Store the host in the invocation and put this back in struct invoke_interface
 
     // Plugin Provided Callbacks
     struct invoke_interface plugin_invoke;
     void* (*begin_plugin_call)(int id, const char* name);
+    void (*end_plugin_call)(void* call);
 };
 
 #undef PBool

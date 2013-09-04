@@ -308,7 +308,7 @@ static void ret_not_implemented(void* call)
     }
 
 RET_FUNC(bool, bool, number)
-RET_FUNC(char, char, number)
+RET_FUNC(char, signed char, number)
 RET_FUNC(uchar, unsigned char, number)
 RET_FUNC(short, short, number)
 RET_FUNC(ushort, unsigned short, number)
@@ -324,9 +324,9 @@ RET_FUNC(double, double, number)
 struct plugin_interface plugin_interface = {
     // My callbacks
     .begin_plugin_call = &begin_call,
+    .end_plugin_call = &end_call,
 
     .plugin_invoke = {
-        .end_call = &end_call,
 
         .ret_void = &ret_void,
         .ret_bool = &ret_bool,
