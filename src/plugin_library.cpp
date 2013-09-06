@@ -214,6 +214,17 @@ void plugin_library::_end_call(void* h, void* inv)
     invoke.release();
 }
 
+const char* plugin_library::_describe_func(void* host, const char* name)
+{
+    try {
+        plugin_library* lib = static_cast<plugin_library*>(host);
+        std::string sName(name);
+        return lib->describe_func(sName).c_str();
+    } catch (std::out_of_range& e) {
+        return 0;
+    }
+}
+
 int plugin_library::_register_plugin_func(void* host, int id, const char* name,
                                           const char* sig)
 {
@@ -278,6 +289,12 @@ int plugin_library::register_plugin_func(int id, std::string& name,
     }
 }
 
+const std::string& plugin_library::describe_func(std::string& name)
+{
+    const function& func = _manager.get_function(name);
+    return func.signature();
+}
+
 void plugin_library::load(std::string& path)
 {
     _libptr = dlLoadLibrary(path.c_str());
@@ -305,6 +322,7 @@ void plugin_library::load(std::string& path)
     _interface->register_func_c = &_register_plugin_func_c;
     _interface->begin_host_call = &_begin_outgoing_call;
     _interface->end_host_call = &_end_call;
+    _interface->describe_func = &_describe_func;
 
     _interface->host_invoke.arg_bool = &_arg_bool;
     _interface->host_invoke.arg_char = &_arg_char;

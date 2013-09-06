@@ -29,26 +29,26 @@ int main(int argc, char** argv)
 
     try {
         const function& banana = manager.get_function(nbanana);
-        std::cout << "banana returned: "
-                  << banana.invoke<int>() << std::endl;
+        std::cout << "host: banana returned: "
+                  << banana.invoke<int>(4.0f, 4.0f) << std::endl;
     } catch (std::out_of_range& e) {
-        std::cout << "banana not found :-(" << std::endl;
+        std::cout << "host: banana not found :-(" << std::endl;
     }
 
     try {
         const function& do_something = manager.get_function(nsomething);
-        std::cout << "do_something returned: "
+        std::cout << "host: do_something returned: "
                   << do_something.invoke<int>(4.0f, 2.0f) << std::endl;
     } catch (std::out_of_range& e) {
-        std::cout << "do_something not found :-(" << std::endl;
+        std::cout << "host: do_something not found :-(" << std::endl;
     }
 
     try {
         const function& call_do_something = manager.get_function(ncsomething);
-        std::cout << "call_do_something returned: "
+        std::cout << "host: call_do_something returned: "
                   << call_do_something.invoke<int>(4.0f, 2.0f) << std::endl;
     } catch (std::out_of_range& e) {
-        std::cout << "call_do_something not found :-(" << std::endl;
+        std::cout << "host: call_do_something not found :-(" << std::endl;
     }
     return 0;
 }

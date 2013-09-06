@@ -31,8 +31,8 @@ public:
     function(const std::string& name, const std::string& signature);
     template<typename TReturn, typename... Arguments>
     TReturn invoke(Arguments... args) const;
-    const std::string& name() const;
-    const std::string& signature() const;
+    const std::string& name() const { return _name; }
+    const std::string& signature() const { return _signature; }
     virtual ~function();
 };
 

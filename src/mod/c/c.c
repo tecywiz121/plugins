@@ -15,14 +15,24 @@ static int current_id = 0;
 //
 int do_something(float a, float b)
 {
-    printf("Doing some math from mod_c\n");
+    printf("C: Doing some math\n");
     return (int)(a*b);
 }
 
 int call_do_something(float a, float b)
 {
-    printf("Beginning call to host\n");
-    void* inv = plugin_interface.begin_host_call(plugin_interface.host, "do_something");
+    printf("C: Figuring out what function to call\n");
+    const char* to_call = "banana"; // Look for banana, provided by test_lua.mod
+    const char* sig = plugin_interface.describe_func(plugin_interface.host,
+                                                     to_call);
+
+    if (!sig) {
+        printf("C: Couldn't find banana, skipping it\n");
+        to_call = "do_something";
+    }
+
+    printf("C: Beginning call to host\n");
+    void* inv = plugin_interface.begin_host_call(plugin_interface.host, to_call);
     plugin_interface.host_invoke.arg_float(inv, a);
     plugin_interface.host_invoke.arg_float(inv, b);
     int retval = plugin_interface.host_invoke.ret_int(inv);
@@ -64,7 +74,7 @@ int start(int id)
         return 0;
     }
 
-    printf("Starting C plugin.\n");
+    printf("C: Starting plugin.\n");
     plugin_interface.register_func_c(plugin_interface.host, id, "do_something",
                                      "ff)i", (void (*)(void))&do_something);
     plugin_interface.register_func_c(plugin_interface.host, id, "call_do_something",

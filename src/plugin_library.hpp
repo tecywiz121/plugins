@@ -55,6 +55,7 @@ extern "C" typedef void* ext_ret_pointer(void* inv);
 extern "C" typedef const char* ext_ret_c_str(void* inv);
 extern "C" typedef void ext_end_call(void* host, void* inv);
 
+extern "C" typedef const char* ext_describe_func(void*, const char*);
 extern "C" typedef void* ext_begin_outgoing_call(void*, const char*);
 extern "C" typedef int ext_register_plugin_func(void*, int, const char*,
                                                 const char*);
@@ -66,6 +67,7 @@ class plugin_library {
     friend class plugin_function;
 
     private:
+        static ext_describe_func _describe_func;
         static ext_register_plugin_func _register_plugin_func;
         static ext_register_plugin_func_c _register_plugin_func_c;
         static ext_begin_outgoing_call _begin_outgoing_call;
@@ -113,6 +115,7 @@ class plugin_library {
         int register_plugin_func(int id, std::string& name, std::string& sig);
         int register_plugin_func(int id, std::string& name, std::string& sig,
                                    fptr func);
+        const std::string& describe_func(std::string& name);
 
     protected:
         // Plugin API

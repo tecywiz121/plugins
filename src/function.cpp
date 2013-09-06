@@ -41,11 +41,6 @@ std::string function::parse_args(const std::string& sig) const
     return ss.str();
 }
 
-const std::string& function::name() const
-{
-    return _name;
-}
-
 void function::check_signature(int fromend, char type) const
 {
     if (_arguments[_arguments.size() - fromend] != type) {
