@@ -1,6 +1,6 @@
 project(MODLUA)
 
-set(CMAKE_C_FLAGS "-g -Wall -Wextra -Werror -Wstrict-aliasing -std=c99 -pedantic")
+set(CMAKE_C_FLAGS "-g3 -Wall -Wextra -Werror -Wstrict-aliasing -std=c99 -pedantic")
 
 add_library(mod_lua SHARED lua.c)
 include_directories(${LUA_INCLUDE_DIR})

@@ -1,6 +1,6 @@
 project(MODC)
 
-set(CMAKE_C_FLAGS "-g -Wall -Wextra -Werror -Wstrict-aliasing -std=c99 -pedantic")
+set(CMAKE_C_FLAGS "-g3 -Wall -Wextra -Werror -Wstrict-aliasing -std=c99 -pedantic")
 
 add_library(mod_c SHARED c.c)
 
