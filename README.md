@@ -11,9 +11,9 @@ Any instructions I give are for Ubuntu, but it shouldn't be too hard to adapt.  
 Requirements
 ------------
 
- * lua5.1 (optional, but useless without it)
+ * lua5.2
 
-  ```$ sudo apt-get install liblua5.1-0-dev```
+  ```$ sudo apt-get install liblua5.2-dev```
 
 Building
 --------
@@ -41,9 +41,6 @@ languages.
 
 Future Plans
 -------
-
-* **Bidirectional API**
-  * Currently plugins are sent arguments prior to being started, and that is the last communication that happens.  I'd like to enable bidirectional communication between the plugins and the host program.  I'm thinking some kind of structure that is sent to the plugins on load that contains the relevant functions.
 
 * **Events/Messaging**
  * I'd like to have some kind of event/messaging system where the plugins can subscribe/publish to topics to allow for inter-plugin communication.
